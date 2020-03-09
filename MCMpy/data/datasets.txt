@@ -1,0 +1,8 @@
+1 aggregation
+2 compound
+3 D31
+4 flames
+5 jain
+6 path based
+7 r15
+8 spiral
