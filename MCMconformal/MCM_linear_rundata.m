@@ -20,7 +20,6 @@ for dataset=10%change the number from 1 to 30 you can put this in a loop like th
     nfolds=5;
     s=size(X,1);%size of training data
     %hyperparameters to be initialized here
-    %degree for polynomial kernel
 
 %     gamma=2.^[-9,-5,-3,-1,1];
     gamma=2.^[-9];
@@ -95,106 +94,11 @@ for dataset=10%change the number from 1 to 30 you can put this in a loop like th
         nsv = length(nonzeros(lambda(lambda>1e-4)));
         
 % conformal
-        edindex = lambda>1e-4;
-        ed = [xTrain(edindex,:) yTrain(edindex)] ; %empirical data
-        data = [xTrain(~edindex,:) yTrain(~edindex)];
-        
-        [m n] = size(data);
-        data = sortrows(data,n);      %sort rows to separate the classes. 
-        a = ed(:,1:n-1);
-        m2 = sum(data(:,n)+1)/2; % number of points in class m2 = -1 
-        m1 = m - m2; 
-        de = size(ed,1);
-        
-        y = data(:,n); 
-        p = data(:,1:n-1); 
-        
-        gam0 = gamma; % set gam0 
-        kernel = kerTypeMCM;
-        for i = 1:m 
-            for j = 1:m 
-                K0(i,j) = kernelfunction(kernel, p(i,:), p(j,:),gam0);         % basic kernel 
-                if i==j 
-                    firstW0(i,j) = K0(i,j);
-                else 
-                    firstW0(i,j) = 0; 
-                end 
-            end 
-        end 
-        
-        K11 = K0(1:m1,1:m1);
-        K12 = K0(1:m1,m1+1:m);
-        K21 = K0(m1+1:m,1:m1);
-        K22 = K0(m1+1:m,m1+1:m); 
-
-        testx = xTest;
-        testy = yTest;
-        
-        [m n] = size(p);
-        
-        gam = gamma*2; % set this larger than gam0
-        for i = 1:m 
-            for j = 1:de 
-                k1matrix(i,j) = kernelfunction(kernel, p(i,:),a(j,:),gam);          %k1 gam = .5
-            end 
-        end 
-        
-        e = ones(m,1);
-        K1 = [e k1matrix]; 
-        B0 = [(1/m1)*K11  zeros(m1,m2);zeros(m2,m1) (1/m2)*K22] - [ (1/m)*K11 (1/m)*K12 ; (1/m)*K21 (1/m)*K22]; 
-        W0 = [firstW0]  - [(1/m1)*K11 zeros(m1,m2); zeros(m2,m1) (1/m2)*K22];
-        M0 = K1'*B0*K1; 
-        N0 = K1'*W0*K1; 
-        
-        e = eye(m,1);
-        C =1e-6; D =1e-6 ;  
-        [ralpha lam]  =  eig(K1'*B0*K1+ C*speye(de+1), K1'*W0*K1+D*speye(de+1)) ;
-%          check
-        max =0 ; maxid =0; 
-        for i  = 1: de %changed 
-            if(lam(i,i) > max ) 
-                max = lam(i,i); 
-                maxid = i; 
-            end 
-        %     fprintf(1,'lam(%d,%d) = %f\n' , i,i,lam(i,i));    
-        end
-
-        rJ1 = ralpha(:,maxid)' * (K1'*B0*K1 + C*speye(de+1)) * ralpha(:,maxid) ; 
-        rJ2 = ralpha(:,maxid)' * (K1'*W0 *K1+ D*speye(de+1)) * ralpha(:,maxid) ;   
-
-        rJ = rJ1 /rJ2 ;
-        qt = K1 * ralpha(:,maxid);
-
-        Kt = zeros(m);
-        for  i = 1:m      
-            for j = 1:m       
-                Kt(i,j) = qt(i) * qt(j) * K0(i,j); 
-            end 
-        end 
-        
-        [ lambdaConf,bConf,hConf ] = mcm_linear_efs_conformal( p, y, kerTypeMCM, testKerPara, Ctest, qt );
-        [~,trainAccConf] = mcmPredictConformal(p,y,p,y,Kt,lambdaConf,bConf);
-        trainAcc
-        trainAccConf
-        m = size(testx,1);
-        qtestr = []; rtestK= []; 
-        for  i = 1:m 
-            qtestr(i) = ralpha(1,maxid); 
-            for j = 1:de 
-                qtestr(i)  = qtestr(i) + ralpha(j+1,maxid) * kernelfunction(kernel, testx(i,:), a(j,:), gam); 
-            end 
-        end 
-        for i = 1:m    
-            for j = 1: size(p,1) 
-                rtestK(i,j) = qtestr(i) * qt(j) * kernelfunction(kernel, testx(i,:), p(j,:), gam0); 
-            end     
-        end 
-        
-        [~,testAccConf] = mcmPredictConformal(p,y,testx,testy,rtestK,lambdaConf,bConf);
-%         till here
+        gam0 = gamma;
+        gam = gamma*2;        
+        [testAccConf,trainAccConf] = accMcmConformal(xTrain,yTrain,xTest,yTest,lambda,kerTypeMCM,gam0,gam,Cbest)
         testAcc
-        testAccConf
-        
+        trainAcc
         if(testAcc >= bestAcc)
                 bestAcc = testAcc;
                 Cbest=Ctest;
