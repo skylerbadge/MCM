@@ -1,4 +1,4 @@
-function [testAccConf, trainAccConf] = accMcmConformal(xTrain,yTrain,xTest,yTest,lambda,kerTypeMCM,gam0,gam,C)
+function [testAccConf, trainAccConf] = accMcmConformal(xTrain,yTrain,xTest,yTest,lambda,kerTypeMCM,gam0,gam,Cpara)
     
         edindex = lambda>1e-4;
         ed = [xTrain(edindex,:) yTrain(edindex)] ; %empirical data
@@ -14,7 +14,6 @@ function [testAccConf, trainAccConf] = accMcmConformal(xTrain,yTrain,xTest,yTest
         y = data(:,n); 
         p = data(:,1:n-1); 
         
-%         gam0 = gamma; % set gam0 
         kernel = kerTypeMCM;
         K0 = zeros(m,m);
         firstW0 = zeros(m,m);
@@ -35,8 +34,7 @@ function [testAccConf, trainAccConf] = accMcmConformal(xTrain,yTrain,xTest,yTest
         K22 = K0(m1+1:m,m1+1:m); 
         
         [m n] = size(p);
-        
-%         gam = gamma*2; % set this larger than gam0
+
         k1matrix = zeros(m,de);
         for i = 1:m 
             for j = 1:de 
@@ -48,10 +46,7 @@ function [testAccConf, trainAccConf] = accMcmConformal(xTrain,yTrain,xTest,yTest
         K1 = [e k1matrix]; 
         B0 = [(1/m1)*K11  zeros(m1,m2);zeros(m2,m1) (1/m2)*K22] - [ (1/m)*K11 (1/m)*K12 ; (1/m)*K21 (1/m)*K22]; 
         W0 = [firstW0]  - [(1/m1)*K11 zeros(m1,m2); zeros(m2,m1) (1/m2)*K22];
-%         M0 = K1'*B0*K1; 
-%         N0 = K1'*W0*K1; 
-        
-%         e = eye(m,1);
+
         C =1e-6; D =1e-6 ;  
         [ralpha lam]  =  eig(K1'*B0*K1+ C*speye(de+1), K1'*W0*K1+D*speye(de+1)) ;
 %          check
@@ -77,14 +72,14 @@ function [testAccConf, trainAccConf] = accMcmConformal(xTrain,yTrain,xTest,yTest
             end 
         end 
         
-        [ lambdaConf,bConf,hConf ] = mcm_linear_efs_conformal( p, y, kerTypeMCM, gam0, C, qt ); % check gam
+        [ lambdaConf,bConf,hConf ] = mcm_linear_efs_conformal( p, y, kerTypeMCM, gam0, Cpara, qt ); % check gam
         [~,trainAccConf] = mcmPredictConformal(p,y,p,y,Kt,lambdaConf,bConf);
         m = size(xTest,1);
         
         qtestr = zeros(1,m);
         rtestK= zeros(m,size(p,1)); 
         for  i = 1:m 
-            qtestr(i) = ralpha(1,maxid); 
+            qtestr(i) = ralpha(1,maxid);  
             for j = 1:de 
                 qtestr(i)  = qtestr(i) + ralpha(j+1,maxid) * kernelfunction(kernel, xTest(i,:), a(j,:), gam); 
             end 
