@@ -3,7 +3,7 @@ clear all;
 
 result=[];
 
-for dataset=10%change the number from 1 to 30 you can put this in a loop like this
+for dataset=24%change the number from 1 to 30 you can put this in a loop like this
     % for dataset=1:30
     %%%%% call everything here...but I do not recommend it, since debugging
     %%%%% is difficult
@@ -22,10 +22,11 @@ for dataset=10%change the number from 1 to 30 you can put this in a loop like th
     %hyperparameters to be initialized here
 
 %     gamma=2.^[-9,-5,-3,-1,1];
-    gamma=2.^[-9];
+%     gamma=2.^[-9,-5,-3];
+    gamma=2.^[-10,-11,-12,-8,-9];
     
 %     cParams = 2.^(-25:2:2);
-    cParams = 2.^[-9];
+    cParams = 2.^(-19:2:2);
 
     kerTypeMCM ='rbf';
 
@@ -47,7 +48,7 @@ for dataset=10%change the number from 1 to 30 you can put this in a loop like th
     bestgam0 = 0 ;
     bestgam = 0 ;
     tic;
-%     for i=1
+%     for i=[1,2,3]
     for i=1:nfolds
         xTrain0=[];
         yTrain=[];
@@ -112,10 +113,12 @@ for dataset=10%change the number from 1 to 30 you can put this in a loop like th
         AccConfFold = 0;
         gam0 = testKerPara;
         
-        for gam = gam0*[1,1.5,2,2.5,3,4,5,8,10,50,80,100,200,500,800,1000]
+        for gam = gam0*[2,2.2,2.4,2.6,2.8,3,4,10,15,20,25,30,40,50,60,70,80,100,500,800,1000,5000]
+%         for gam = gam0*linspace(2,500,1000)
             try
-                gam
-                [testAccConf,trainAccConf] = accMcmConformal(xTrain,yTrain,xTest,yTest,lambda,kerTypeMCM,gam0,gam,Cbest)
+                gam/gam0
+                [testAccConf,trainAccConf] = accMcmConformal(xTrain,yTrain,xTest,yTest,lambda,kerTypeMCM,gam0,gam,Cbest);
+                testAccConf
             catch
                 testAccConf = 0;
                 trainAccConf = 0;
@@ -140,9 +143,10 @@ for dataset=10%change the number from 1 to 30 you can put this in a loop like th
         t1=[t1;trainAcc];
         t2=[t2;testAcc];
         t3=[t3;nsv];
-        
-        t4=[t4;trainAccConfFold];
-        t5=[t5;AccConfFold];
+        if (AccConfFold~=0)
+            t4=[t4;trainAccConfFold];
+            t5=[t5;AccConfFold];
+        end
 
     end
     avg1=mean(t1);
@@ -163,7 +167,7 @@ for dataset=10%change the number from 1 to 30 you can put this in a loop like th
     r=[dataset avg1 std1 avg2 std2 avg3 std3 avg4 std4 avg5 std5 Cbest bestKerPara CbestConf bestgam0 bestgam timeFold];
     result=[result;r];
     
-    fprintf(2,'MCM : Best Accuracy :  %.3f     C: %.3f    P: %.3f \n',avg2,Cbest,bestKerPara);
-    fprintf(2,'MCM Conformal: Best Accuracy :  %.3f     C: %.3f    G0: %.3f   G: %.3f',avg5,CbestConf,bestgam0, bestgam);
-    xlswrite(strcat(int2str(dataset),'result_baseline_gs.xlsx'),result)
+    fprintf(2,'MCM : Avg Accuracy :  %.3f     C: %.3f    P: %.3f \n',avg2,Cbest,bestKerPara);
+    fprintf(2,'MCM Conformal: Avg Accuracy :  %.3f     C: %.3f    G0: %.3f   G: %.3f',avg5,CbestConf,bestgam0, bestgam);
+    xlswrite(strcat(int2str(dataset),'_result_baseline_conformal_gs.xlsx'),result)
 end

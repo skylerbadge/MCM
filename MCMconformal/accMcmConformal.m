@@ -1,6 +1,6 @@
 function [testAccConf, trainAccConf] = accMcmConformal(xTrain,yTrain,xTest,yTest,lambda,kerTypeMCM,gam0,gam,Cpara)
     
-        edindex = lambda>1e-4;
+        edindex = lambda>1e-6;
         ed = [xTrain(edindex,:) yTrain(edindex)] ; %empirical data
         data = [xTrain(~edindex,:) yTrain(~edindex)];
         
