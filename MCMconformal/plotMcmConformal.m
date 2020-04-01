@@ -1,4 +1,4 @@
-function [Kt, rtestK] = plotMcmConformal(xTrain,yTrain,xTest,yTest,lambda,kerTypeMCM,gam0,gam,Cpara)
+function [Kt,K1, trainAccConf,testAccConf] = plotMcmConformal(xTrain,yTrain,xTest,yTest,lambda,kerTypeMCM,gam0,gam,Cpara)
     
         edindex = abs(lambda)>1e-6;
         ed = [xTrain(edindex,:) yTrain(edindex)] ; %empirical data

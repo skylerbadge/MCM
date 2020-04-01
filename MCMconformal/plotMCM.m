@@ -3,18 +3,15 @@ clear all;
 
 result=[];
 figure;
-dotsize = 12;
+dotsize = 20;
  colormap([1 0 .5;   % magenta
            0 0 .8;   % blue
            0 .6 0;   % dark green
            .3 1 0]); % bright green
 
 
-dataset=30;%change the number from 1 to 30 you can put this in a loop like this
-% for dataset=1:30
-%%%%% call everything here...but I do not recommend it, since debugging
-%%%%% is difficult
-% end
+dataset=26;
+
 filename= sprintf('%d.mat',dataset);
 folds=sprintf('%dfold.mat',dataset);
 load(strcat('data_folds/',filename));
@@ -24,7 +21,7 @@ disp(dataset);
 
 X=x;
 Y=y;
-nfolds=5;
+
 s=size(X,1);
 
 gamma=2.^[-10,-11,-12,-8,-9];
@@ -38,7 +35,7 @@ yTrain=[];
 xTest0=[];
 yTest=[];
 
-test = (indices == 1);
+test = (indices == 2);
 train = ~test;
 for j=1:s
     if(train(j)==1)
@@ -71,7 +68,7 @@ for n=1:size(xTest,2)
 end
 [coeff,score] = pca(xTrain);
 subplot(2,2,1);
-scatter(score(:,1), score(:,2), dotsize, yTrain); axis equal;
+scatter(score(:,1), score(:,2), dotsize, yTrain,'filled');
 
 [Ctest,testKerPara] = tuneMCM( xTrain, yTrain , kerTypeMCM , cParams , gamma);
 try
@@ -93,7 +90,7 @@ end
 
 [coeff,score] = pca(K);
 subplot(2,2,2);
-scatter(score(:,1), score(:,2), dotsize, yTrain); axis equal;
+scatter(score(:,1), score(:,2), dotsize, yTrain,'filled');
 
 
 
@@ -124,13 +121,14 @@ for gam = gam0*[2,2.2,2.4,2.6,2.8,3,4,10,15,20,25,30,40,50,60,70,80,100,500,800,
     end
 end 
 
-[Kt, rtestK] = plotMcmConformal(xTrain,yTrain,xTest,yTest,lambda,kerTypeMCM,bestgam0,bestgam,CbestConf);
+[Kt,k1,trA,tesA] = plotMcmConformal(xTrain,yTrain,xTest,yTest,lambda,kerTypeMCM,bestgam0,bestgam,CbestConf);
 
+% [coeff,score] = pca(k1);
+% subplot(2,2,3);
+% scatter(score(:,1), score(:,2), dotsize, yTrain,'filled');
 [coeff,score] = pca(Kt);
-subplot(2,2,3);
-scatter(score(:,1), score(:,2), dotsize, yTrain); axis equal;
-
-
+subplot(2,2,4);
+scatter(score(:,1), score(:,2), dotsize, yTrain,'filled');
 
 
 testAcc  
