@@ -69,7 +69,7 @@ end
 [coeff,score] = pca(xTrain);
 subplot(2,2,1);
 scatter(score(:,1), score(:,2), dotsize, yTrain,'filled');
-title('Data embedding without any kernel optimization')
+title('Data ')
 
 [Ctest,testKerPara] = tuneMCM( xTrain, yTrain , kerTypeMCM , cParams , gamma);
 try
@@ -92,7 +92,7 @@ end
 [coeff,score] = pca(K);
 subplot(2,2,2);
 scatter(score(:,1), score(:,2), dotsize, yTrain,'filled');
-title('Data embedding with primary RBF Kernel')
+
 
 
 [ test_pred,testAcc ] = mcmPredict( xTrain,xTest,yTest,kerTypeMCM,testKerPara,lambda,b );
@@ -130,7 +130,7 @@ end
 [coeff,score] = pca(Kt);
 subplot(2,2,3);
 scatter(score(:,1), score(:,2), dotsize, yTrain,'filled');
-title('Data embedding using proposed kernel optimization')
+title('My Title')
 
 
 testAcc  
