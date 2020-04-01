@@ -67,9 +67,16 @@ for n=1:size(xTest,2)
     end
 end
 [coeff,score] = pca(xTrain);
-subplot(2,2,1);
+subplot(3,2,1);
 scatter(score(:,1), score(:,2), dotsize, yTrain,'filled');
-title('Data embedding without any kernel optimization')
+title('Train Data embedding without any kernel optimization')
+
+[coeff,score] = pca(xTest);
+subplot(3,2,2);
+scatter(score(:,1), score(:,2), dotsize, yTest,'filled');
+title('Test Data embedding without any kernel optimization')
+
+
 
 [Ctest,testKerPara] = tuneMCM( xTrain, yTrain , kerTypeMCM , cParams , gamma);
 try
@@ -90,9 +97,27 @@ for i=1:N
 end
 
 [coeff,score] = pca(K);
-subplot(2,2,2);
+subplot(3,2,3);
 scatter(score(:,1), score(:,2), dotsize, yTrain,'filled');
-title('Data embedding with primary RBF Kernel')
+title('Train Data embedding with primary RBF Kernel')
+
+[N,~]=size(xTrain);
+[Ntest,~]=size(xTest);
+K=zeros(Ntest,N);
+for i=1:Ntest
+    for      j=1:N
+        
+        K(i,j)=K(i,j)+...
+            kernelfunction(kerTypeMCM,xTest(i,:),xTrain(j,:),testKerPara);
+        
+    end
+end
+
+[coeff,score] = pca(K);
+subplot(3,2,4);
+scatter(score(:,1), score(:,2), dotsize, yTest,'filled');
+title('Test Data embedding with primary RBF Kernel')
+
 
 
 [ test_pred,testAcc ] = mcmPredict( xTrain,xTest,yTest,kerTypeMCM,testKerPara,lambda,b );
@@ -122,15 +147,20 @@ for gam = gam0*[2,2.2,2.4,2.6,2.8,3,4,10,15,20,25,30,40,50,60,70,80,100,500,800,
     end
 end 
 
-[Kt,k1,trA,tesA] = plotMcmConformal(xTrain,yTrain,xTest,yTest,lambda,kerTypeMCM,bestgam0,bestgam,CbestConf);
+[Kt,rtestK,trA,tesA] = plotMcmConformal(xTrain,yTrain,xTest,yTest,lambda,kerTypeMCM,bestgam0,bestgam,CbestConf);
 
 % [coeff,score] = pca(k1);
 % subplot(2,2,3);
 % scatter(score(:,1), score(:,2), dotsize, yTrain,'filled');
 [coeff,score] = pca(Kt);
-subplot(2,2,3);
+subplot(3,2,5);
 scatter(score(:,1), score(:,2), dotsize, yTrain,'filled');
-title('Data embedding using proposed kernel optimization')
+title('Train Data embedding using proposed kernel optimization')
+
+[coeff,score] = pca(rtestK);
+subplot(3,2,6);
+scatter(score(:,1), score(:,2), dotsize, yTest,'filled');
+title('Test Data embedding using proposed kernel optimization')
 
 
 testAcc  
