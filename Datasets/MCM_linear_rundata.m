@@ -3,7 +3,7 @@ clear all;
 
 result=[];
 
-for dataset=3%change the number from 1 to 30 you can put this in a loop like this
+for dataset=8%change the number from 1 to 30 you can put this in a loop like this
     % for dataset=1:30
     %%%%%%%% call everything here...but I do not recommend it, since debugging
     %%%%%%%% is difficult
@@ -28,7 +28,7 @@ for dataset=3%change the number from 1 to 30 you can put this in a loop like thi
     % end
     
 %     gamma=2.^[-9,-5,-3,-1,1];
-    gamma=2.^[-9,1];
+    gamma=2.^[-3];
 %     gamma=2.^[-9];
 %     gamma(1)=0.1;
 %     for i=2:5

@@ -3,7 +3,7 @@ clear all;
 
 result=[];
 
-for dataset=24%change the number from 1 to 30 you can put this in a loop like this
+for dataset=12%change the number from 1 to 30 you can put this in a loop like this
     % for dataset=1:30
     %%%%% call everything here...but I do not recommend it, since debugging
     %%%%% is difficult
