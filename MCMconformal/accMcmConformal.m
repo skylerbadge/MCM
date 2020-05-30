@@ -1,8 +1,10 @@
 function [testAccConf, trainAccConf] = accMcmConformal(xTrain,yTrain,xTest,yTest,lambda,kerTypeMCM,gam0,gam,Cpara)
     
         edindex = abs(lambda)>1e-6;
+%         edindex =  edindex0 & (trainPred==yTrain);  
         ed = [xTrain(edindex,:) yTrain(edindex)] ; %empirical data
-        data = [xTrain(~edindex,:) yTrain(~edindex)];
+%         data = [xTrain(~edindex,:) yTrain(~edindex)];
+        data = [xTrain yTrain];
         
         [m n] = size(data);
         data = sortrows(data,n);      %sort rows to separate the classes. 

@@ -3,7 +3,7 @@ clear all;
 
 result=[];
 
-for dataset=12%change the number from 1 to 30 you can put this in a loop like this
+for dataset=[30]%change the number from 1 to 30 you can put this in a loop like this
     % for dataset=1:30
     %%%%% call everything here...but I do not recommend it, since debugging
     %%%%% is difficult
@@ -18,7 +18,7 @@ for dataset=12%change the number from 1 to 30 you can put this in a loop like th
     X=x;
     Y=y;
     nfolds=5;
-    s=size(X,1);%size of training data
+    s=size(X,1);%size of training data  
     %hyperparameters to be initialized here
 
 %     gamma=2.^[-9,-5,-3,-1,1];
@@ -138,7 +138,6 @@ for dataset=12%change the number from 1 to 30 you can put this in a loop like th
                 bestgam = gam ;
             end
         end 
-        
 
         t1=[t1;trainAcc];
         t2=[t2;testAcc];
@@ -164,10 +163,10 @@ for dataset=12%change the number from 1 to 30 you can put this in a loop like th
 %   r=[avg1 avg2 avg3 std1 std2 std3 C1(a1) C2(a2) d_min(a3)];
     timeFold = toc;
     
-    r=[dataset avg1 std1 avg2 std2 avg3 std3 avg4 std4 avg5 std5 Cbest bestKerPara CbestConf bestgam0 bestgam timeFold];
+    r=[dataset avg1 std1 avg2 std2 Cbest bestKerPara avg3 std3 avg4 std4 avg5 std5 CbestConf bestgam0 bestgam timeFold];
     result=[result;r];
     
     fprintf(2,'MCM : Avg Accuracy :  %.3f     C: %.3f    P: %.3f \n',avg2,Cbest,bestKerPara);
     fprintf(2,'MCM Conformal: Avg Accuracy :  %.3f     C: %.3f    G0: %.3f   G: %.3f',avg5,CbestConf,bestgam0, bestgam);
-    xlswrite(strcat(int2str(dataset),'_result_baseline_conformal_gs.xlsx'),result)
+%     xlswrite(strcat(int2str(dataset),'_result_baseline_conformal_gs.xlsx'),result)
 end
